@@ -8,7 +8,7 @@ def read_devices():
         devices = json.load(json_file)
         return devices
 
-def update_devices():
+def update_devices(devices):
     with open("devices.json", "w") as json_file:
         json.dump(devices, json_file)
 
@@ -29,7 +29,7 @@ def setstatus():
     if client_uuid in devices:
         try:
             devices[client_uuid]["status"]="online"
-            update_devices()
+            update_devices(devices)
             read_devices()
             return "device online"
         except:
