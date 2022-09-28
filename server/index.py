@@ -5,8 +5,8 @@ import uuid
 import time
 #uuid.uuid4()
 
-tasks_location="/tmp/tasks.json"
-devices_location="/tmp/devices.json"
+tasks_location="./tmp/tasks.json"
+devices_location="./tmp/devices.json"
 devices = {}
 
 class Task:
