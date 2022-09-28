@@ -1,19 +1,59 @@
 from flask import Flask, jsonify, request, Response
 from flask_request_arg import request_arg
 import json
+import uuid
+import time
+#uuid.uuid4()
 
 devices = {}
+
+class Task:
+    def __init__(self, uuid=str(uuid.uuid4()), name="", device="", status="", file=""):
+        self.name = name
+        self.uuid = uuid
+        self.file = file
+        self.device = device
+        self.status = status
+
+    @property
+    def createdts(self):
+        return(time.time())
+
+    def body(self):
+        body = {
+            "uuid4": self.uuid,
+            "uuid4_hex": uuid.UUID(self.uuid).hex,
+            "name": self.name,
+            "device": self.device,
+            "status": self.status,
+            "file": self.file,
+            "createdts": self.createdts
+        }
+        return(body)
+
+def read_tasks():
+    with open("tasks.json", "r") as json_file:
+        tasks = json.load(json_file)
+        return tasks
 
 def read_devices():
     with open("devices.json", "r") as json_file:
         devices = json.load(json_file)
         return devices
 
-def update_devices(devices):
+def update_devices():
+    global devices
     with open("devices.json", "w") as json_file:
         json.dump(devices, json_file)
 
+def update_tasks():
+    global tasks
+    with open("tasks.json", "w") as json_file:
+        json.dump(tasks, json_file)
+
 devices = read_devices()
+tasks = read_tasks()
+
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
@@ -23,17 +63,40 @@ def hello():
 
 @app.route('/listdevices')
 def listdevices():
+    global devices
     return jsonify(devices)
+
+@app.route('/showtasks')
+def showtasks():
+    global tasks
+    return jsonify(tasks)
+
+@app.route('/newtask')
+def newtask():
+    global devices, tasks
+    task_uuid, task_name, task_device, task_file = request.args.get('uuid', default=None, type=str), request.args.get('name', default=None, type=str), request.args.get('device', default=None, type=str), request.args.get('file', default=None, type=str)
+    newtask = Task()
+    if task_name is not None:
+        newtask.name = task_name
+    if task_device in devices:
+        newtask.device = task_device
+    if task_uuid is not None:
+        newtask.uuid = task_uuid
+
+    print(newtask.body())
+    tasks[newtask.uuid] = newtask.body()
+    update_tasks()
+    return jsonify(tasks[newtask.uuid]), 200
 
 @app.route('/setstatus',methods = ['POST'])
 def setstatus():
+    global devices
     client_uuid, client_key = str(request.args['uuid']), str(request.args['key']) #only executes the code below if param uuid is provided
 
     if client_uuid in devices and client_key == devices[client_uuid]["key"]:
         try:
             devices[client_uuid]["status"]="online"
-            update_devices(devices)
-            read_devices()
+            update_devices()
             
             data_return = {
                 "message": "status changed to online"
@@ -55,6 +118,7 @@ def setstatus():
 
 @app.route('/getserverinfo',methods = ['GET'])
 def getserverinfo():
+    global devices
     client_uuid, client_key = str(request.args['uuid']), str(request.args['key']) #only executes the code below if param uuid is provided
     server_key="teste"
     server_new_ip="0.0.0.0"
@@ -84,6 +148,7 @@ def getserverinfo():
 
 @app.route('/subscribe',methods = ['POST'])
 def subscribe():
+    global devices
     client_uuid, client_key, client_ip, client_port = str(request.args['uuid']), str(request.args['key']), str(request.args['ip']), str(request.args['port']) #only executes the code below if param uuid is provided
 
     if client_uuid in devices and client_key == devices[client_uuid]["key"]:
