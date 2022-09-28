@@ -265,7 +265,3 @@ def joinwaitlist():
             "message": "uuid not in trusted devices list or invalid key"
         }
         return jsonify(data_return), 403
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000", debug=True)
