@@ -5,6 +5,8 @@ import uuid
 import time
 #uuid.uuid4()
 
+tasks_location="/tmp/tasks.json"
+devices_location="/tmp/devices.json"
 devices = {}
 
 class Task:
@@ -32,24 +34,24 @@ class Task:
         return(body)
 
 def read_tasks():
-    with open("tasks.json", "r") as json_file:
+    with open(tasks_location, "r") as json_file:
         tasks = json.load(json_file)
         return tasks
 
+def update_tasks():
+    global tasks
+    with open(tasks_location, "w") as json_file:
+        json.dump(tasks, json_file)
+
 def read_devices():
-    with open("devices.json", "r") as json_file:
+    with open(devices_location, "r") as json_file:
         devices = json.load(json_file)
         return devices
 
 def update_devices():
     global devices
-    with open("devices.json", "w") as json_file:
+    with open(devices_location, "w") as json_file:
         json.dump(devices, json_file)
-
-def update_tasks():
-    global tasks
-    with open("tasks.json", "w") as json_file:
-        json.dump(tasks, json_file)
 
 devices = read_devices()
 tasks = read_tasks()
