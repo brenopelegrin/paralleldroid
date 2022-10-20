@@ -12,6 +12,10 @@ api.add_resource(ViewTask, '/task/<int:task_id>/view')
 api.add_resource(ListAllTasks, '/task/list')
 api.add_resource(CompleteTask, '/task/<int:task_id>/upload')
 
+@app.route('/')
+def documentation():
+    return "You can view the server-end documentation on <a href='https://github.com/brenopelegrin/paralleldroid/tree/master/server'>GitHub.</a>"
+
 if __name__ == '__main__':
     p1 = multiprocessing.Process(target=ListenForTasks)
     p1.start()
