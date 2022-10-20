@@ -1,4 +1,4 @@
-#!/home/breno/dev/paralleldroid/server/bin/python3
+#!/home/brenopelegrin/dev/paralleldroid/server/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
