@@ -33,7 +33,7 @@ class Task(db.Model):
 class TaskSchema(ma.Schema):
     class Meta:
         fields = ("id", "device_id", "file", "status")
-        model = Device
+        model = Task
 
 device_schema = DeviceSchema()
 devices_schema = DeviceSchema(many=True)
